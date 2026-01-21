@@ -1,0 +1,27 @@
+{
+  "name": "contact-project-with-nodejs",
+  "version": "1.0.0",
+  "description": "this is contact backend API",
+  "main": "index.mjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:dev": "nodemon index.mjs",
+    "start": "node index.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/boysenberrys/ContactBOOKwithNODEJS.git"
+  },
+  "author": "Boysen Berrys",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/boysenberrys/ContactBOOKwithNODEJS/issues"
+  },
+  "homepage": "https://github.com/boysenberrys/ContactBOOKwithNODEJS#readme",
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
