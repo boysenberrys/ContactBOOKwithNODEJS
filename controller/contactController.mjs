@@ -1,10 +1,13 @@
 import expressAsyncHandler from "express-async-handler";
+import { Contact } from "../models/contactModels.mjs";
+
 
 // @desc get all contacts
 // @routes GET /api/contacts
 //@access public
 export const getContacts = expressAsyncHandler(async(request, response)=>{
-    response.status(200).json({message: "get all contacts"})
+    const contacts = await Contact.find();
+    response.status(200).json(contacts)
 });
 
 // @desc get all contacts
@@ -18,6 +21,10 @@ export const createContacts = expressAsyncHandler(async(request, response)=>{
         response.status(400);
         throw new Error("all field are mandatory")
     }
+    const contact = await Contact.create({
+        name, email,phone
+    })
+
     response.status(201).json({message: "contact created"})
 });
 
@@ -25,18 +32,18 @@ export const createContacts = expressAsyncHandler(async(request, response)=>{
 // @routes GET /api/contacts:id
 //@access public
 export const getContact = expressAsyncHandler(async(request, response)=>{
-    response.status(200).json({message: `Get contacts for ${request.params.id}`})
+    // use async await to fetch contact in the database
+    const contact = await Contact.findById(request.params.id);
+
+    //if contact not found in the database
+    if(!contact){
+        response.status(404);
+        throw new Error("Contact not available");
+    }
+    //if contact found, return the found contact
+    response.status(200).json(contact);
 });
 
-
-// @desc create contact by id
-// @routes POST /api/contacts:id
-//@access public
-export const createContact = expressAsyncHandler(async(request, response)=>{
-   
-    response.status(200).json({message: `Create contacts for ${request.params.id}`})
-    
-});
 
 // @desc update contact by id
 // @routes PUT /api/contacts:id

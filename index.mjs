@@ -5,7 +5,7 @@ import routers from "./routes/routes.mjs";
 import { errorHandler } from "./middlewares/errorHandler.mjs";
 
 
-const env = dotenv.config();
+dotenv.config();
 const app = express();
 
 const mongoDB = async()=>{
@@ -22,7 +22,7 @@ mongoDB();
 
 // middlewares
 app.use(express.json());
-app.use(routers);
+app.use("/api/", routers);
 app.use(errorHandler)
 
 
