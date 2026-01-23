@@ -49,12 +49,42 @@ export const getContact = expressAsyncHandler(async(request, response)=>{
 // @routes PUT /api/contacts:id
 //@access public
 export const updateContact = expressAsyncHandler(async(request, response)=>{
-    response.status(200).json({message: `Update contact for ${request.params.id}`})
+    //find contact by id from parameter;
+    const contact = await Contact.findById(request.params.id);
+    if(!contact){
+        response.status(400);
+        throw new Error("Contact not available!");
+    }
+    // if contact is vaialble, proceed to updating by using findByIdAndUpdate;
+    const updatedContact = await Contact.findByIdAndUpdate(
+        request.params.id,
+        request.body,
+        { new: true }
+    );
+    // what's working under the hook?
+            // database received id from params, update the record in the DB with new body content, then it return new contact { new: true}, if you put { new: flase} it return the old document.
+    response.status(200).send(updatedContact);
+
 });
 
 // @desc delete contact by id
-// @routes DELETE /api/contacts:id
+// @routes DELETE /api/contacts/:id
 //@access public
 export const deleteContact = expressAsyncHandler(async(request, response)=>{
+    // find contact in the database by using ID fro params;
+    const contact = Contact.findById(request.params.id);
+    if(!contact){
+        response.status(400);
+        throw new Error("Contact not found");
+    }
+
+    // delete the found contact
+    await contact.deleteOne();
     response.status(200).json({message: `Deleted contact for ${request.params.id}`})
+
+    // ALTENATIVE- you can use this short without middleware
+    //const contact = await Contact.findByIdAndDelete(request.params.id);
+    // if(!contact){
+    //    reponse.status(400)
+    //    throw new Error("Contact not found!")}
 })
