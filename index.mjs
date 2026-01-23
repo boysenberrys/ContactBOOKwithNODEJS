@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import routers from "./routes/routes.mjs";
+import userRouter from "./routes/userRoutes.mjs"
 import { errorHandler } from "./middlewares/errorHandler.mjs";
 
 
@@ -23,6 +24,7 @@ mongoDB();
 // middlewares
 app.use(express.json());
 app.use("/api/", routers);
+app.use("/api/users/", userRouter);
 app.use(errorHandler)
 
 

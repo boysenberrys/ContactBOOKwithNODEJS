@@ -80,7 +80,7 @@ export const deleteContact = expressAsyncHandler(async(request, response)=>{
 
     // delete the found contact
     await contact.deleteOne();
-    response.status(200).json({message: `Deleted contact for ${request.params.id}`})
+    response.status(200).json({message: `Deleted contact for ${contact}`})
 
     // ALTENATIVE- you can use this short without middleware
     //const contact = await Contact.findByIdAndDelete(request.params.id);
