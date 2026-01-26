@@ -4,9 +4,9 @@ import { Contact } from "../models/contactModels.mjs";
 
 // @desc get all contacts
 // @routes GET /api/contacts
-//@access public
+//@access private
 export const getContacts = expressAsyncHandler(async(request, response)=>{
-    const contacts = await Contact.find();
+    const contacts = await Contact.find({user_id: request.user.id});
     response.status(200).json(contacts)
 });
 
@@ -22,7 +22,7 @@ export const createContacts = expressAsyncHandler(async(request, response)=>{
         throw new Error("all field are mandatory")
     }
     const contact = await Contact.create({
-        name, email,phone
+        name, email,phone, user_ind: request.user.id
     })
 
     response.status(201).json({message: "contact created"})
@@ -47,13 +47,19 @@ export const getContact = expressAsyncHandler(async(request, response)=>{
 
 // @desc update contact by id
 // @routes PUT /api/contacts:id
-//@access public
+//@access private
 export const updateContact = expressAsyncHandler(async(request, response)=>{
     //find contact by id from parameter;
     const contact = await Contact.findById(request.params.id);
     if(!contact){
         response.status(400);
         throw new Error("Contact not available!");
+    }
+
+    //check token first
+    if(contact.user_id.toString() !== request.user.id){
+        response.status(400);
+        throw new Error("User don't have permission to update other users contact")
     }
     // if contact is vaialble, proceed to updating by using findByIdAndUpdate;
     const updatedContact = await Contact.findByIdAndUpdate(
@@ -69,7 +75,7 @@ export const updateContact = expressAsyncHandler(async(request, response)=>{
 
 // @desc delete contact by id
 // @routes DELETE /api/contacts/:id
-//@access public
+//@access private
 export const deleteContact = expressAsyncHandler(async(request, response)=>{
     // find contact in the database by using ID fro params;
     const contact = Contact.findById(request.params.id);
@@ -77,9 +83,14 @@ export const deleteContact = expressAsyncHandler(async(request, response)=>{
         response.status(400);
         throw new Error("Contact not found");
     }
-
+    //autheticate user before deletion
+    //check token first
+    if(contact.user_id.toString() !== request.user.id){
+        response.status(400);
+        throw new Error("User don't have permission to update other users contact")
+    }
     // delete the found contact
-    await contact.deleteOne();
+    await contact.deleteOne({_id:request.params.id});
     response.status(200).json({message: `Deleted contact for ${contact}`})
 
     // ALTENATIVE- you can use this short without middleware

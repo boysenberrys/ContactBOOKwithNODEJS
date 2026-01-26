@@ -56,7 +56,7 @@ export const loginUser = expressAsyncHandler(async(request, response)=>{
                 id: loginUser.id
             },
         },process.env.ACCESS_TOKEN_SECRET,
-        {expiresIn: "1m"}
+        {expiresIn: "55m"}
 
      );
 
@@ -69,8 +69,8 @@ export const loginUser = expressAsyncHandler(async(request, response)=>{
 });
 
 //@desc current user
-// @routes POST /api/users/current
+//@routes POST /api/users/current
 //@access private
 export const currentUser = expressAsyncHandler(async(request, response)=>{
-    response.json({message: "You are already signed in!"})
+    response.json(request.user);
 });
