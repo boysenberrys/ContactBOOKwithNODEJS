@@ -1,6 +1,7 @@
 import expressAsyncHandler from "express-async-handler";
 import { User } from "../models/userModel.mjs";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 //@desc register new user
 // @routes POST /api/users/register
@@ -37,6 +38,33 @@ export const registerUsers = expressAsyncHandler(async(request, response)=>{
 // @routes POST /api/users/login
 //@access public
 export const loginUser = expressAsyncHandler(async(request, response)=>{
+    const { email, password } = request.body;
+    if(!email || !password){
+        response.status(400);
+        throw new Error("All credentials are mandatory");
+    }
+    //Check if user is available in the database;
+    const loginUser =  await User.findOne({email});
+    
+
+    //if user is in database compare password with hash password
+    if( loginUser && (await bcrypt.compare(password, loginUser.password))){
+        const accessToken = jwt.sign({
+            user: {
+                username: loginUser.username,
+                email: loginUser.email,
+                id: loginUser.id
+            },
+        },process.env.ACCESS_TOKEN_SECRET,
+        {expiresIn: "1m"}
+
+     );
+
+        response.status(200).json({ accessToken });
+    } else{
+        response.status(400);
+        throw new Error("Bad credentials")
+    }
     response.json({message: "logged in"});
 });
 
